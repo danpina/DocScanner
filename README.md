@@ -59,10 +59,17 @@ Then check the "Actions" tab on GitHub for the build result.
 
 ### 2. Actually running it on your iPhone
 
-A Simulator build proves the code compiles, but VisionKit's document camera **requires a real device** — there's no camera in the Simulator. To install on your iPhone and test the camera/crop/PDF flow, you need Xcode running on a Mac at some point. Two practical options since you don't own one:
+A Simulator build proves the code compiles, but VisionKit's document camera **requires a real device** — there's no camera in the Simulator. With a paid Apple Developer Program membership, the `TestFlight` workflow (`.github/workflows/testflight.yml`) builds, signs and uploads the app from GitHub's macOS runners — no Mac needed. Then install it on your iPhone from the TestFlight app.
 
-- **Rent a cloud Mac** (e.g. MacinCloud, MacStadium). Clone this repo there, run `brew install xcodegen && xcodegen generate`, open `DocScanner.xcodeproj`, sign in with your Apple ID under Signing & Capabilities (a free Apple ID is enough to install on your own device for 7 days at a time — no paid account needed), connect your iPhone (via USB passthrough if the provider supports it, or their remote-desktop client), and hit Run.
-- **Borrow a Mac briefly** just to do the first device pairing/build — after that, an Apple Developer Program membership ($99/yr) lets you distribute builds via **TestFlight**, which you could then install purely from your iPhone without touching a Mac again. This is more setup (code signing certificates, App Store Connect) — worth doing once you're happy with the app and want to iterate without cloud-Mac rentals each time. Ask me when you're ready to set that up.
+One-time setup:
+
+1. **Register the bundle ID** `com.danpina.docscanner` at developer.apple.com → Certificates, Identifiers & Profiles → Identifiers (App IDs, type "App").
+2. **Create the app record** at appstoreconnect.apple.com → Apps → New App (iOS, pick that bundle ID; the app *name* must be unique on the App Store, but it can differ from the name shown on the home screen).
+3. **Create an API key**: App Store Connect → Users and Access → Integrations → App Store Connect API → Team Keys → generate with the **Admin** role (needed so Xcode can manage signing certificates for you). Download the `.p8` file (only possible once) and note the Key ID and Issuer ID.
+4. **Add four repository secrets** (GitHub repo → Settings → Secrets and variables → Actions): `APPLE_TEAM_ID` (developer.apple.com → Membership details), `ASC_KEY_ID`, `ASC_ISSUER_ID`, and `ASC_KEY_P8` (paste the full text of the `.p8` file).
+5. **Run it**: Actions tab → TestFlight → Run workflow. The build number is the run number, so every run uploads a new build. After Apple finishes processing (a few minutes), add yourself as an internal tester in App Store Connect → TestFlight and install via the TestFlight app on your iPhone.
+
+If you do have a Mac (or a rented cloud Mac), you can also run it directly from Xcode — see below.
 
 ### 3. Local iteration tips once you're on a Mac
 
@@ -76,7 +83,7 @@ Then just build & run onto your connected iPhone from Xcode (⌘R).
 
 ## Known limitations / next steps
 
-- App icon is a placeholder (empty slot) — add a real 1024×1024 icon before any App Store submission.
+- App icon is a simple generated placeholder design (`Resources/Assets.xcassets/AppIcon.appiconset`) — swap in your own 1024×1024 PNG (no transparency) any time.
 - PDF pages are laid out on US Letter size; add A4 as an option if you need it.
 - Filters are simple CIFilters (grayscale/B&W) — Lens-style "whiteboard" or "business card" auto-enhance modes could be added later.
 - No cloud backup/sync of saved scans — everything lives in the app's local Documents folder for now.

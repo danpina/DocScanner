@@ -1,6 +1,6 @@
 name: DocScanner
 options:
-  bundleIdPrefix: com.example
+  bundleIdPrefix: com.danpina
 configs:
   Debug: debug
   Release: release
@@ -19,11 +19,13 @@ targets:
         UILaunchScreen: {}
         CFBundleDisplayName: "DocScanner"
         NSCameraUsageDescription: "DocScanner needs camera access to scan documents."
+        ITSAppUsesNonExemptEncryption: false
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.docscanner
+        PRODUCT_BUNDLE_IDENTIFIER: com.danpina.docscanner
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "1"
         MARKETING_VERSION: "1.0"
